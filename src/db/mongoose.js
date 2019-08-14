@@ -16,7 +16,27 @@ const User = mongoose.model(`User`,{
     }
 })
 
-const me = new User({
-    name: `Abhilash Vadnala`,
-    age: 22
+const Task = mongoose.model(`Task`,{
+    title: {
+        type: String
+    },
+    comments: {
+        type: String
+    },
+    completed: {
+        type: Boolean
+    }
 })
+
+const me = new User({
+    name: `HeroAB`
+})
+
+const code = new Task({
+    title: `complete Task App in 15hrs`,
+    comments: `didn't do any productive work yet.`,
+    completed: false
+})
+
+me.save()
+code.save()
