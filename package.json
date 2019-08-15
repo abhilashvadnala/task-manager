@@ -1,20 +1,29 @@
 {
   "name": "task-manager-app",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node",
     "dev": "nodemon src/index.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Abhilash Vadnala",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
     "mongodb": "^3.3.0",
     "mongoose": "^5.6.9",
     "nodemon": "^1.19.1",
     "validator": "^11.1.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abhilashvadnala/task-manager.git"
+  },
+  "bugs": {
+    "url": "https://github.com/abhilashvadnala/task-manager/issues"
+  },
+  "homepage": "https://github.com/abhilashvadnala/task-manager#readme",
+  "description": ""
 }
