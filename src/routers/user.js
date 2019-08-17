@@ -5,7 +5,6 @@ const router = new express.Router()
 //creates a user
 router.post(`/users`, async (req, res) => {
     const user = new User(req.body)
-
     try {
         user.save()
         res.status(201).send(user)
@@ -76,6 +75,17 @@ router.delete(`/users/:id`,async (req, res) => {
         res.send(u)
     } catch (error) {
         res.status(500).send(error)
+    }
+})
+
+//user login
+router.post(`/users/login`, async (req, res) => {
+    try {
+        const user = await User.findByCredentials(req.body.email, req.body.password)
+        console.log(user)
+        res.status(200).send(user)
+    } catch (error) {
+        res.status(500).send(user)
     }
 })
 
