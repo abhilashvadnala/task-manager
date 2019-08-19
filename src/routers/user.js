@@ -1,5 +1,6 @@
 const express = require(`express`)
 const User = require(`../models/user`)
+const auth = require(`../middleware/auth`)
 const router = new express.Router()
 
 //user signup
@@ -26,14 +27,8 @@ router.post(`/users/login`, async (req, res) => {
 })
 
 //retrives all users
-router.get(`/users`, async (req, res) => {
-    try {
-        const user = await User.find({})
-        res.send(user)
-    } catch (error) {
-        res.status(204).send(error)
-    }
-
+router.get(`/users/me`, auth, async (req, res) => {
+    res.send(req.user)
 })
 
 //retrives a single user based on _id
