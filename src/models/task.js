@@ -1,6 +1,11 @@
 const mongoose = require(`mongoose`)
 
 const taskSchema = new mongoose.Schema({
+    author: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
+    },
     title: {
         type: String,
         required: true
@@ -8,8 +13,7 @@ const taskSchema = new mongoose.Schema({
     description: {
         type: String,
         trim: true,
-        required: true,
-
+        required: false,
     },  
     comments: {
         type: String,
@@ -19,6 +23,8 @@ const taskSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     }
+}, {
+    timestamps: true
 })
 
 const Task = mongoose.model(`Task`, taskSchema)

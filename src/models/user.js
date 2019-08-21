@@ -2,14 +2,13 @@ const mongoose = require(`mongoose`)
 const bcrypt = require(`bcryptjs`)
 const validator = require(`validator`)
 const jwt = require(`jsonwebtoken`)
+const Task = require(`./task`)
 
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        trim: true,
-        minlength: 4,
-        maxlength: 14
+        trim: true
     },
     password: {
         type: String,
@@ -37,7 +36,11 @@ const userSchema = new mongoose.Schema({
     age: {
         type: Number,
         default: 0,
-        min: 0
+        validate(value) {
+            if(value < 0) {
+                throw new Error(`Age should be something positive.`)
+            }
+        }
     },
     tokens: [{
         token: {
@@ -45,13 +48,33 @@ const userSchema = new mongoose.Schema({
             required: true
         }
     }]
+}, {
+    timestamps: true
 })
+
+userSchema.virtual(`myTasks`, {
+    ref: 'Task',
+    localField: '_id',
+    foreignField: 'author'
+})
+
+//hiding private data
+userSchema.methods.toJSON = function(){
+    const user = this
+    const userObject = user.toObject()
+    delete userObject.password
+    delete userObject.tokens
+    delete userObject.createdAt
+    delete userObject.updatedAt
+    return userObject
+}
 
 //generating web tokens
 userSchema.methods.generateAuthToken = async function () {
     const user = this
-    const token = jwt.sign({ _id: user._id.toString() }, `MacBook Air`)
+    const token = jwt.sign( {_id: user._id.toString()}, `MacBook Air`)
     user.tokens = user.tokens.concat({token})
+    
     await user.save()
     return token
 }
@@ -75,6 +98,13 @@ userSchema.pre(`save`, async function(next){
     if(user.isModified(`password`)){
         user.password = await bcrypt.hash(user.password, 8)
     }
+    next()
+})
+
+//deleting user tasks, when user acc is deleted
+userSchema.pre('remove', async function(next){
+    const user = this
+    await Task.deleteMany({author: user._id})
     next()
 })
 

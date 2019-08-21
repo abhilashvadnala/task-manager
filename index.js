@@ -9,15 +9,10 @@ const taskRouter = require(`./src/routers/task`)
 const app = express()
 const port = process.env.PORT || 3000
 
-//site under maintenance
-// app.use((req, res, next) => {
-//     res.status(503).send(`Site is under maintenance. Please come back later.`)
-// })
-
-// This line parses all the incoming json into obj
 app.use(express.json())
 app.use(userRouter)
 app.use(taskRouter)
 
 
 app.listen(port, () => console.log(`Server is Up on ${port}`))
+
