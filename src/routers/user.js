@@ -2,6 +2,8 @@ const express = require(`express`)
 const User = require(`../models/user`)
 const auth = require(`../middleware/auth`)
 const router = new express.Router()
+const multer = require(`multer`)
+const sharp = require('sharp')
 
 //user signup
 router.post(`/users/signup`, async (req, res) => {
@@ -23,6 +25,51 @@ router.post(`/users/login`, async (req, res) => {
         res.status(200).send({user,token})
     } catch (error) {
         res.status(500).send()
+    }
+})
+
+//setting avatar
+const upload = multer({
+    limits: {
+        fileSize: 1000000
+    },
+    fileFilter(req, file, cb) {
+        if(!file.originalname.match(/\.(jpg|jpeg|png)$/)){
+            return cb(new Error('Please upload a valid image format'))
+        }
+        cb(undefined,true)
+    }
+})
+router.post(`/users/me/avatar`, auth, upload.single('avatar'), async (req, res) => {
+    const buffer = sharp(req.file.avatar).resize({ width: 250, height: 250}).png().toBuffer()
+    req.user.avatar = buffer
+    await req.user.save()
+    res.status(200).send()
+}, (error, req, res, next) => {
+    res.status(400).send({error: error.message})
+})
+
+//deleting avatar
+router.delete(`/users/me/avatar`, auth, async(req, res) => {
+    try {
+    req.user.avatar = undefined
+    await req.user.save()
+    res.status(202).send()
+    } catch (error) {
+        res.status(500).send('Unable to remove avatar')
+    }
+})
+
+//fetching avatar onto browser
+router.get(`/users/me/avatar`, auth, async(req, res) => {
+    try {
+        if(!req.user.avatar){
+            res.status(404).send('No avatar!')
+        }
+        res.set('Content-Type', 'image/png')
+        res.send(req.user.avatar)
+    } catch (error) {
+        res.status(500).send('Internal Error')
     }
 })
 
